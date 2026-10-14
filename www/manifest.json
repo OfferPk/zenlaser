@@ -1,0 +1,23 @@
+{
+  "name": "ZenLaser - Calm Offline Optics Logic Puzzle",
+  "short_name": "ZenLaser",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#070B12",
+  "theme_color": "#070B12",
+  "orientation": "portrait-primary",
+  "description": "Sleek, calming offline laser optics and light reflection logic puzzle game with 50 levels and procedural crystal audio.",
+  "categories": ["games", "puzzle"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "name": "zenlaser",
+  "version": "1.0.0",
+  "description": "ZenLaser: sleek, calming offline laser optics and light reflection logic puzzle game",
+  "main": "src/app.js",
+  "scripts": {
+    "test": "node --test test/engine.test.js",
+    "build": "node scripts/build.js",
+    "cap:add": "cap add android",
+    "cap:sync": "cap sync android"
+  },
+  "keywords": [
+    "laser",
+    "optics",
+    "puzzle",
+    "offline",
+    "capacitor",
+    "pwa",
+    "vanilla-js",
+    "logic-game"
+  ],
+  "author": "OfferPk",
+  "license": "MIT",
+  "devDependencies": {
+    "@capacitor/android": "^6.2.0",
+    "@capacitor/cli": "^6.2.0",
+    "@capacitor/core": "^6.2.0"
+  }
+}

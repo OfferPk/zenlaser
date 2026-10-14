@@ -1,0 +1,9 @@
+{
+  "appId": "pk.offer.zenlaser",
+  "appName": "ZenLaser",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "android": {
+    "backgroundColor": "#070B12"
+  }
+}
