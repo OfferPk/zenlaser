@@ -35,6 +35,58 @@
   const packTabsContainer = document.getElementById('pack-tabs');
   const levelGridContainer = document.getElementById('level-grid');
 
+  const modalOpeners = new Map([
+    [levelsModal, btnLevels],
+    [rulesModal, btnRules]
+  ]);
+
+  function openModal(modal, focusTarget) {
+    modal.setAttribute('aria-hidden', 'false');
+    modal.classList.add('active');
+    requestAnimationFrame(() => focusTarget?.focus());
+  }
+
+  function closeModal(modal, returnFocus = true) {
+    modal.classList.remove('active');
+    modal.setAttribute('aria-hidden', 'true');
+    if (returnFocus) modalOpeners.get(modal)?.focus();
+  }
+
+  function getFocusableElements(container) {
+    return [...container.querySelectorAll('button:not(:disabled), [href], input:not(:disabled), select:not(:disabled), textarea:not(:disabled), [tabindex]:not([tabindex="-1"])')]
+      .filter(element => element.getClientRects().length > 0);
+  }
+
+  document.addEventListener('keydown', (event) => {
+    const activeModal = document.querySelector('.modal-overlay.active');
+    if (!activeModal) return;
+
+    if (event.key === 'Escape' && activeModal !== winModal) {
+      closeModal(activeModal);
+      return;
+    }
+
+    if (event.key !== 'Tab') return;
+    const focusable = getFocusableElements(activeModal);
+    if (!focusable.length) return;
+
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === activeModal)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  });
+
+  for (const modal of [levelsModal, rulesModal]) {
+    modal.addEventListener('click', (event) => {
+      if (event.target === modal) closeModal(modal);
+    });
+  }
+
   // State
   let currentLevelId = 1;
   let engine = null;
@@ -65,6 +117,9 @@
 
   function updateSoundIcon() {
     const isMuted = sound.isMuted();
+    btnSound.setAttribute('aria-pressed', String(!isMuted));
+    btnSound.setAttribute('aria-label', isMuted ? 'Turn sound on' : 'Turn sound off');
+    btnSound.title = isMuted ? 'Turn sound on' : 'Turn sound off';
     btnSound.innerHTML = isMuted
       ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`
       : `<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
@@ -93,6 +148,7 @@
     // Targets meter
     const totalTargets = engine.targets.length;
     const energizedTargets = engine.targets.filter(t => t.tile.energized).length;
+    targetsMeterEl.setAttribute('aria-label', `${energizedTargets} of ${totalTargets} crystals energized`);
 
     targetsMeterEl.innerHTML = '';
     for (let i = 0; i < totalTargets; i++) {
@@ -106,7 +162,7 @@
     if (!canvas.parentElement) return;
     const container = canvas.parentElement;
     const rect = container.getBoundingClientRect();
-    const size = Math.floor(Math.min(rect.width - 24, rect.height - 24, 520));
+    const size = Math.max(0, Math.floor(Math.min(rect.width - 24, rect.height - 24, 520)));
 
     const dpr = window.devicePixelRatio || 1;
     canvas.width = size * dpr;
@@ -476,7 +532,7 @@
     setTimeout(() => {
       winMovesEl.textContent = moveCount;
       winTargetsEl.textContent = engine.targets.length;
-      winModal.classList.add('active');
+      openModal(winModal, btnNextLevel);
     }, 450);
   }
 
@@ -518,32 +574,33 @@
   btnLevels.addEventListener('click', () => {
     sound.playClick();
     renderLevelsModal();
-    levelsModal.classList.add('active');
+    openModal(levelsModal, btnCloseLevels);
   });
 
   btnCloseLevels.addEventListener('click', () => {
     sound.playClick();
-    levelsModal.classList.remove('active');
+    closeModal(levelsModal);
   });
 
   btnRules.addEventListener('click', () => {
     sound.playClick();
-    rulesModal.classList.add('active');
+    openModal(rulesModal, btnCloseRules);
   });
 
   btnCloseRules.addEventListener('click', () => {
     sound.playClick();
-    rulesModal.classList.remove('active');
+    closeModal(rulesModal);
   });
 
   btnNextLevel.addEventListener('click', () => {
     sound.playClick();
-    winModal.classList.remove('active');
+    closeModal(winModal, false);
     if (currentLevelId < 50) {
       initLevel(currentLevelId + 1);
     } else {
       initLevel(1);
     }
+    btnLevels.focus();
   });
 
   function renderLevelsModal() {
@@ -552,10 +609,14 @@
     for (const pack of PACKS) {
       const tab = document.createElement('button');
       tab.className = 'pack-tab' + (pack.id === selectedPackId ? ' active' : '');
+      tab.type = 'button';
+      tab.dataset.packId = pack.id;
+      tab.setAttribute('aria-pressed', String(pack.id === selectedPackId));
       tab.textContent = `${pack.name} (${pack.id}/5)`;
       tab.addEventListener('click', () => {
         selectedPackId = pack.id;
         renderLevelsModal();
+        packTabsContainer.querySelector(`[data-pack-id="${pack.id}"]`)?.focus();
       });
       packTabsContainer.appendChild(tab);
     }
@@ -568,8 +629,11 @@
     for (let id = startId; id < endId; id++) {
       const btn = document.createElement('button');
       btn.className = 'level-btn';
+      btn.type = 'button';
       if (id === currentLevelId) btn.classList.add('active');
       if (completedLevels.has(id)) btn.classList.add('completed');
+      btn.setAttribute('aria-label', `Level ${id}${id === currentLevelId ? ', current level' : ''}${completedLevels.has(id) ? ', completed' : ''}`);
+      if (id === currentLevelId) btn.setAttribute('aria-current', 'page');
       btn.textContent = id;
 
       btn.addEventListener('click', () => {

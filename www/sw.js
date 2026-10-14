@@ -2,7 +2,7 @@
  * ZenLaser - Service Worker for 100% Offline Play
  */
 
-const CACHE_NAME = 'zenlaser-v1';
+const CACHE_NAME = 'zenlaser-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
