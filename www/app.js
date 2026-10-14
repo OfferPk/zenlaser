@@ -65,6 +65,9 @@
 
   function updateSoundIcon() {
     const isMuted = sound.isMuted();
+    btnSound.setAttribute('aria-pressed', String(!isMuted));
+    btnSound.setAttribute('aria-label', isMuted ? 'Turn sound on' : 'Turn sound off');
+    btnSound.title = isMuted ? 'Turn sound on' : 'Turn sound off';
     btnSound.innerHTML = isMuted
       ? `<svg viewBox="0 0 24 24"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>`
       : `<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>`;
@@ -93,6 +96,7 @@
     // Targets meter
     const totalTargets = engine.targets.length;
     const energizedTargets = engine.targets.filter(t => t.tile.energized).length;
+    targetsMeterEl.setAttribute('aria-label', `${energizedTargets} of ${totalTargets} crystals energized`);
 
     targetsMeterEl.innerHTML = '';
     for (let i = 0; i < totalTargets; i++) {

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>ZenLaser - Calm Offline Optics Logic Puzzle</title>
   <meta name="description" content="ZenLaser is a sleek, calming offline laser optics and light reflection logic puzzle game with 50 levels and procedural crystal audio.">
   <meta name="theme-color" content="#070B12">
@@ -15,7 +15,7 @@
 <body>
   <div id="app-container">
     <!-- Header -->
-    <header>
+    <header class="app-header">
       <div class="logo-group" id="header-logo">
         <svg class="gem-icon" viewBox="0 0 24 24">
           <polygon points="12 2 2 9 12 22 22 9 12 2" />
@@ -51,10 +51,16 @@
     </header>
 
     <!-- Status Bar -->
-    <div class="status-bar">
+    <div class="status-bar" role="group" aria-label="Current puzzle status">
       <div class="status-badge" id="level-title">Level 1: First Ray</div>
-      <div class="targets-meter" id="targets-meter" title="Target Resonators"></div>
-      <div>Moves: <span id="move-count" style="font-weight: 700; color: #fff;">0</span></div>
+      <div class="target-status">
+        <span class="status-caption">CRYSTALS</span>
+        <div class="targets-meter" id="targets-meter" role="img" aria-label="0 of 0 crystals energized" title="Target Resonators"></div>
+      </div>
+      <div class="moves-status">
+        <span class="status-caption">MOVES</span>
+        <span id="move-count" class="move-count">0</span>
+      </div>
     </div>
 
     <!-- Board Container -->
@@ -94,7 +100,7 @@
       <div class="modal-card">
         <div class="modal-header">
           <h2>Select Level</h2>
-          <button class="btn-icon" id="close-levels">✕</button>
+        <button class="btn-icon" id="close-levels" aria-label="Close level selection">✕</button>
         </div>
         <div class="modal-body">
           <div class="pack-tabs" id="pack-tabs"></div>
@@ -108,7 +114,7 @@
       <div class="modal-card">
         <div class="modal-header">
           <h2>Optics Guide</h2>
-          <button class="btn-icon" id="close-rules">✕</button>
+        <button class="btn-icon" id="close-rules" aria-label="Close game rules">✕</button>
         </div>
         <div class="modal-body">
           <div class="rule-item">
