@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ZenLaser - Calm Offline Optics Logic Puzzle</title>
+  <meta name="description" content="ZenLaser is a sleek, calming offline laser optics and light reflection logic puzzle game with 50 levels and procedural crystal audio.">
+  <meta name="theme-color" content="#070B12">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ZenLaser">
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app-container">
+    <!-- Header -->
+    <header>
+      <div class="logo-group" id="header-logo">
+        <svg class="gem-icon" viewBox="0 0 24 24">
+          <polygon points="12 2 2 9 12 22 22 9 12 2" />
+        </svg>
+        <div class="title-group">
+          <h1>ZenLaser</h1>
+          <div class="pack-subtitle" id="pack-name">Reflection</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-icon" id="btn-sound" title="Toggle Sound" aria-label="Toggle Sound">
+          <svg viewBox="0 0 24 24">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+        <button class="btn-icon" id="btn-levels" title="Level Select" aria-label="Level Select">
+          <svg viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+        </button>
+        <button class="btn-icon" id="btn-rules" title="Game Rules" aria-label="Game Rules">
+          <svg viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+      <div class="status-badge" id="level-title">Level 1: First Ray</div>
+      <div class="targets-meter" id="targets-meter" title="Target Resonators"></div>
+      <div>Moves: <span id="move-count" style="font-weight: 700; color: #fff;">0</span></div>
+    </div>
+
+    <!-- Board Container -->
+    <div class="board-container">
+      <canvas id="laser-canvas"></canvas>
+    </div>
+
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <button class="ctrl-btn" id="btn-undo" title="Undo Move">
+        <svg viewBox="0 0 24 24">
+          <polyline points="1 4 1 10 7 10"></polyline>
+          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+        </svg>
+        <span>Undo</span>
+      </button>
+
+      <button class="ctrl-btn" id="btn-reset" title="Reset Level">
+        <svg viewBox="0 0 24 24">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path>
+        </svg>
+        <span>Reset</span>
+      </button>
+
+      <button class="ctrl-btn primary" id="btn-hint" title="Smart Optical Hint">
+        <svg viewBox="0 0 24 24">
+          <path d="M9 18h6"></path>
+          <path d="M10 22h4"></path>
+          <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+        </svg>
+        <span>Hint</span>
+      </button>
+    </div>
+
+    <!-- Level Select Modal -->
+    <div class="modal-overlay" id="levels-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Select Level</h2>
+          <button class="btn-icon" id="close-levels">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="pack-tabs" id="pack-tabs"></div>
+          <div class="level-grid" id="level-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rules / Help Modal -->
+    <div class="modal-overlay" id="rules-modal">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h2>Optics Guide</h2>
+          <button class="btn-icon" id="close-rules">✕</button>
+        </div>
+        <div class="modal-body">
+          <div class="rule-item">
+            <div class="rule-icon" style="color: #7CE8FF; background: rgba(0, 229, 255, 0.15);">╱</div>
+            <div class="rule-info">
+              <h4>Diagonal Mirrors</h4>
+              <p>Tap mirrors to rotate them by 90°. They reflect incoming laser rays at crisp 90° angles.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-icon" style="color: #FFDD33; background: rgba(255, 221, 51, 0.15);">▲</div>
+            <div class="rule-info">
+              <h4>Prism Beam Splitters</h4>
+              <p>When hit along their axis, splitters divide a single ray into forward, left, and right branches.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-icon" style="color: #FF3366; background: rgba(255, 51, 102, 0.15);">■</div>
+            <div class="rule-info">
+              <h4>Chromatic Filters</h4>
+              <p>Filters tint white beams into specific colors. Incompatible colors are absorbed.</p>
+            </div>
+          </div>
+          <div class="rule-item">
+            <div class="rule-icon" style="color: #00FF99; background: rgba(0, 255, 153, 0.15);">◆</div>
+            <div class="rule-info">
+              <h4>Crystal Resonators</h4>
+              <p>Energize all target crystals with matching color light to complete each puzzle.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Victory Modal -->
+    <div class="modal-overlay" id="win-modal">
+      <div class="modal-card">
+        <div class="victory-content">
+          <div class="victory-icon">
+            <svg viewBox="0 0 24 24">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <h2 class="victory-title">Resonance Achieved!</h2>
+          <p class="victory-msg">All optical crystals are perfectly aligned and glowing in harmonic resonance.</p>
+          <div class="victory-stats">
+            <div class="stat-item">
+              <div class="stat-val" id="win-moves">0</div>
+              <div class="stat-lbl">Rotations</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-val" id="win-targets">0</div>
+              <div class="stat-lbl">Crystals</div>
+            </div>
+          </div>
+          <div class="victory-actions">
+            <button class="btn-primary-action" id="btn-next-level">Next Level</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="laser-engine.js"></script>
+  <script src="levels.js"></script>
+  <script src="audio.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
